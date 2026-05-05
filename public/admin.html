@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Panel - Indori Tasty restaurants</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+/* BACKGROUND */
+body{
+background: url('https://images.unsplash.com/photo-1499028344343-cd173ffc68a9') no-repeat center center/cover;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+body::before{
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:-1;
+}
+
+/* NAVBAR */
+nav{
+background:#222;
+padding:15px;
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+.nav-container{
+max-width:1100px;
+margin:auto;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.nav-links a{
+color:white;
+text-decoration:none;
+margin:0 15px;
+font-size:18px;
+}
+
+.nav-links a:hover{
+color:orange;
+}
+
+.admin-info{
+color:white;
+font-size:18px;
+}
+
+.logout-btn{
+background:red;
+border:none;
+color:white;
+padding:6px 12px;
+border-radius:5px;
+cursor:pointer;
+margin-left:10px;
+}
+
+.logout-btn:hover{
+background:darkred;
+}
+
+/* PAGE */
+.container{
+width:1000px;
+margin:auto;
+margin-top:40px;
+background:rgba(255,255,255,0.95);
+padding:20px;
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,0.3);
+flex:1;
+}
+
+h2{
+text-align:center;
+margin-bottom:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:10px;
+border-bottom:1px solid #ddd;
+text-align:center;
+}
+
+th{
+background:orange;
+color:white;
+}
+
+button{
+padding:5px 10px;
+border:none;
+background:red;
+color:white;
+cursor:pointer;
+border-radius:5px;
+}
+
+/* FOOTER */
+footer{
+background:#111;
+color:white;
+text-align:center;
+padding:15px;
+margin-top:auto;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav>
+<div class="nav-container">
+
+<div class="nav-links">
+<a href="dashborad.html">Dashboard</a>
+<a href="admin.html">All user</a>
+<a href="orders.html"> All orders</a>
+<a href="menu-u.html">Manage Menu</a>
+<a href="feedback.html">feedback</a>
+</div>
+
+<div class="admin-info">
+👨‍💼 Admin
+<button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+</div>
+</nav>
+
+<!-- PAGE CONTENT -->
+<div class="container">
+
+<h2>Admin - All Users</h2>
+
+<table>
+
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Email</th>
+<th>Phone</th>
+</tr>
+
+<tbody id="usersTable"></tbody>
+
+</table>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+© 2026 Indori Tasty Restaurant | Admin Panel
+</footer>
+
+<script>
+
+/* 🔐 PROTECT PAGE */
+if(!localStorage.getItem("adminLoggedIn")){
+  window.location.href="login.html";
+}
+
+/* LOAD USERS */
+loadUsers();
+
+function loadUsers(){
+fetch("http://localhost:3000/admin/users")
+.then(res => res.json())
+.then(data => {
+
+console.log("USERS 👉", data);
+
+let table = document.getElementById("usersTable");
+table.innerHTML = "";
+
+data.forEach(user => {
+
+let row = `
+<tr>
+<td>${user.id}</td>
+<td>${user.name}</td>
+<td>${user.email}</td>
+<td>${user.phone}</td>
+</tr>
+`;
+
+table.innerHTML += row;
+
+});
+
+})
+.catch(err => console.log(err));
+}
+
+/* ✅ LOGOUT FIX */
+function logout(){
+  localStorage.removeItem("adminLoggedIn");
+  localStorage.removeItem("adminEmail");
+  window.location.replace("login.html");
+}
+
+</script>
+
+</body>
+</html>

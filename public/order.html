@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Orders - Indori Tasty Restaurant</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+background:#f4f4f4;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+/* NAVBAR */
+
+nav{
+background:#222;
+padding:15px;
+position:sticky;
+top:0;
+z-index:1000;
+}
+
+.nav-container{
+display:flex;
+justify-content:space-between;
+align-items:center;
+max-width:1100px;
+margin:auto;
+}
+
+.nav-links a{
+color:white;
+text-decoration:none;
+margin:0 15px;
+font-size:18px;
+}
+
+.nav-links a:hover{
+color:orange;
+}
+
+.user-section{
+display:flex;
+align-items:center;
+gap:15px;
+color:white;
+font-size:18px;
+}
+
+.logout-btn{
+background:red;
+padding:6px 12px;
+border:none;
+color:white;
+border-radius:5px;
+cursor:pointer;
+}
+
+.logout-btn:hover{
+background:darkred;
+}
+
+/* PAGE */
+
+.container{
+max-width:900px;
+margin:50px auto;
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+flex:1;
+width:100%;
+}
+
+h2{
+text-align:center;
+margin-bottom:25px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:12px;
+border-bottom:1px solid #ddd;
+text-align:center;
+}
+
+th{
+background:orange;
+color:white;
+}
+
+tr:hover{
+background:#f1f1f1;
+}
+
+/* FOOTER */
+
+footer{
+background:#111;
+color:white;
+text-align:center;
+padding:15px;
+margin-top:auto;
+width:100%;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+
+<nav>
+
+<div class="nav-container">
+
+<div class="nav-links">
+<a href="home.html">Home</a>
+<a href="menu.html">Menu</a>
+<a href="about.html">About</a>
+<a href="contact.html">Contact</a>
+<a href="Order.html">Orders</a>
+</div>
+
+<div class="user-section">
+<span>👤 <span id="userName">User</span></span>
+<button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+</div>
+
+</nav>
+
+<!-- ORDER TABLE -->
+
+<div class="container">
+
+<h2>Your Order History</h2>
+
+<table>
+
+<thead>
+<tr>
+<th>Food</th>
+<th>Price</th>
+<th>Qty</th>
+<th>Total</th>
+<th>City</th>
+<th>Payment</th>
+</tr>
+</thead>
+
+<tbody id="orderTable">
+</tbody>
+
+</table>
+
+</div>
+
+<footer>
+Indori Tasty Restaurant
+</footer>
+
+<script>
+
+/* USER NAME */
+let userName = localStorage.getItem("userName");
+document.getElementById("userName").innerText = userName || "User";
+
+/* LOGOUT */
+function logout(){
+localStorage.clear();
+alert("Logout Successful");
+window.location.href = "login.html";
+}
+
+/* LOAD ORDERS */
+
+let email = localStorage.getItem("userEmail");
+
+fetch("http://localhost:3000/admin/orders")
+.then(res => res.json())
+.then(data => {
+
+let table = document.getElementById("orderTable");
+table.innerHTML = "";
+
+let userOrders = data.filter(order => order.email === email);
+
+if(userOrders.length === 0){
+table.innerHTML = "<tr><td colspan='6'>No Orders Found</td></tr>";
+return;
+}
+
+userOrders.forEach(order => {
+
+let price = order.price;
+
+if(!price && order.total && order.quantity){
+price = order.total / order.quantity;
+}
+
+let row = `
+<tr>
+<td>${order.food}</td>
+<td>₹${price || 0}</td>
+<td>${order.quantity}</td>
+<td>₹${order.total}</td>
+<td>${order.city}</td>
+<td>${order.payment}</td>
+</tr>
+`;
+
+table.innerHTML += row;
+
+});
+
+})
+.catch(err => {
+console.log("Error:", err);
+});
+
+</script>
+
+</body>
+</html>

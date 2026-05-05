@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Manage Menu - Admin</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial;}
+
+/* ✅ BACKGROUND IMAGE + FULL HEIGHT */
+body{
+background: url('https://images.unsplash.com/photo-1499028344343-cd173ffc68a9') no-repeat center center/cover;
+min-height:100vh;
+display:flex;
+flex-direction:column;
+}
+
+/* OPTIONAL DARK OVERLAY */
+body::before{
+content:"";
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+z-index:-1;
+}
+
+/* NAVBAR */
+nav{background:#222;padding:15px;}
+.nav-container{
+max-width:1100px;
+margin:auto;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+.nav-links a{
+color:white;
+text-decoration:none;
+margin:0 15px;
+}
+
+.admin-info{color:white;}
+
+.logout-btn{
+background:red;
+color:white;
+border:none;
+padding:6px 12px;
+border-radius:5px;
+cursor:pointer;
+}
+
+/* PAGE */
+h2{
+text-align:center;
+margin-top:20px;
+color:white; /* visible on image */
+}
+
+.container{
+text-align:center;
+margin-top:20px;
+flex:1; /* ✅ push footer down */
+}
+
+input{
+padding:8px;
+margin:5px;
+border:1px solid #ccc;
+border-radius:5px;
+}
+
+button{
+padding:8px 12px;
+background:orange;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+margin:3px;
+}
+
+table{
+width:90%;
+margin:auto;
+margin-top:30px;
+background:rgba(255,255,255,0.95); /* readable */
+border-collapse:collapse;
+}
+th,td{
+padding:10px;
+border-bottom:1px solid #ddd;
+text-align:center;
+}
+th{
+background:orange;
+color:white;
+}
+img{
+border-radius:5px;
+}
+
+/* ✅ FOOTER FIX */
+footer{
+background:#111;
+color:white;
+text-align:center;
+padding:15px;
+margin-top:auto;
+}
+
+</style>
+</head>
+
+<body onload="initPage()">
+
+<nav>
+<div class="nav-container">
+
+<div class="nav-links">
+<a href="dashborad.html">Dashboard</a>
+<a href="admin.html">All users</a>
+<a href="orders.html">All orders</a>
+<a href="menu-u.html">Manage Menu</a>
+<a href="feedback.html">feedback</a>
+</div>
+
+<div class="admin-info">
+👨‍💼 <span id="adminName"></span>
+<button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+</div>
+</nav>
+
+<h2>Menu Manager</h2>
+
+<!-- FORM -->
+<div class="container">
+<input type="text" id="foodName" placeholder="Food Name">
+<input type="number" id="foodPrice" placeholder="Price">
+<input type="file" id="foodImage">
+<input type="text" id="foodDesc" placeholder="Description">
+
+<button onclick="addMenu()">Add Menu</button>
+</div>
+
+<!-- TABLE -->
+<table>
+<tr>
+<th>ID</th>
+<th>Image</th>
+<th>Food</th>
+<th>Price</th>
+<th>Action</th>
+</tr>
+
+<tbody id="menuTable"></tbody>
+</table>
+
+<!-- ✅ FOOTER -->
+<footer>
+© 2026 Indori Tasty Restaurant | Admin Panel
+</footer>
+
+<script>
+
+function initPage(){
+if(!localStorage.getItem("adminLoggedIn")){
+alert("Login Required ❌");
+window.location.href="login.html";
+return;
+}
+
+document.getElementById("adminName").innerText =
+localStorage.getItem("adminEmail") || "Admin";
+
+loadMenu();
+}
+
+/* LOAD MENU */
+function loadMenu(){
+fetch("http://localhost:3000/admin/menu")
+.then(res => res.json())
+.then(data => {
+
+let table = document.getElementById("menuTable");
+table.innerHTML = "";
+
+data.forEach(item => {
+
+let img = item.image || "https://via.placeholder.com/60";
+
+table.innerHTML += `
+<tr>
+<td>${item.id}</td>
+<td><img src="${img}" width="60"></td>
+<td>${item.food}</td>
+<td>₹${item.price}</td>
+<td>
+<button onclick="deleteMenu(${item.id})">Delete</button>
+</td>
+</tr>
+`;
+
+});
+});
+}
+
+/* ADD MENU */
+function addMenu(){
+
+let food = document.getElementById("foodName").value.trim();
+let price = document.getElementById("foodPrice").value.trim();
+let desc = document.getElementById("foodDesc").value.trim();
+let imageFile = document.getElementById("foodImage").files[0];
+
+if(food === "" || price === ""){
+alert("Food name and price required ❌");
+return;
+}
+
+let formData = new FormData();
+formData.append("food", food);
+formData.append("price", price);
+formData.append("desc", desc);
+formData.append("stock", "In Stock");
+
+if(imageFile){
+formData.append("image", imageFile);
+}
+
+fetch("http://localhost:3000/admin/menu", {
+method:"POST",
+body: formData
+})
+.then(res=>res.json())
+.then(()=>{
+alert("Menu Added ✅");
+
+document.getElementById("foodName").value = "";
+document.getElementById("foodPrice").value = "";
+document.getElementById("foodImage").value = "";
+document.getElementById("foodDesc").value = "";
+
+loadMenu();
+});
+}
+
+/* DELETE */
+function deleteMenu(id){
+if(confirm("Delete this item?")){
+fetch(`http://localhost:3000/admin/menu/${id}`,{
+method:"DELETE"
+})
+.then(()=>loadMenu());
+}
+}
+
+/* LOGOUT */
+function logout(){
+localStorage.clear();
+window.location.href="login.html";
+}
+
+</script>
+
+</body>
+</html>

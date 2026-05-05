@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Indori Tasty Restaurant</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+height:100vh;
+background:
+linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),
+url("https://images.unsplash.com/photo-1504674900247-0877df9cc836");
+background-size:cover;
+background-position:center;
+display:flex;
+flex-direction:column;
+}
+
+nav{
+background:rgba(0,0,0,0.85);
+padding:15px;
+text-align:center;
+}
+
+nav a{
+color:white;
+text-decoration:none;
+margin:0 20px;
+font-size:18px;
+}
+
+.login-container{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.login-box{
+background:rgba(255,255,255,0.12);
+backdrop-filter:blur(12px);
+padding:40px;
+width:350px;
+border-radius:15px;
+box-shadow:0 10px 30px rgba(0,0,0,0.5);
+text-align:center;
+color:white;
+}
+
+.login-box h2{
+margin-bottom:25px;
+font-size:28px;
+}
+
+.login-box input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border:none;
+border-radius:6px;
+font-size:15px;
+outline:none;
+}
+
+.login-box button{
+width:100%;
+padding:12px;
+margin-top:10px;
+background:orange;
+border:none;
+color:white;
+font-size:16px;
+border-radius:6px;
+cursor:pointer;
+}
+
+footer{
+background:black;
+color:white;
+text-align:center;
+padding:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<nav>
+<a>Welcome to Indori Tasty Restaurant</a>
+</nav>
+
+<div class="login-container">
+
+<div class="login-box">
+
+<h2>🍔 Login</h2>
+
+<form onsubmit="return loginUser()">
+
+<input type="email" id="email" placeholder="Enter Email" required>
+<input type="password" id="password" placeholder="Enter Password" required>
+
+<button type="submit">Login</button>
+
+</form>
+
+</div>
+
+</div>
+
+<footer>
+Welcome to Indori Tasty Restaurant
+</footer>
+
+<!-- ✅ FINAL SCRIPT -->
+
+
+<script>
+
+async function loginUser(){
+
+let email = document.getElementById("email").value.trim();
+let password = document.getElementById("password").value.trim();
+
+/* ===== ADMIN LOGIN ===== */
+
+if(email === "admin@gmail.com"){
+
+const adminRes = await fetch("http://localhost:3000/admin/login",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({email,password})
+});
+
+const adminData = await adminRes.json();
+
+if(adminData.success){
+localStorage.setItem("adminLoggedIn","true");
+alert("Admin Login Successful");
+window.location.href="admin.html";
+return false;
+}
+
+}
+
+/* ===== USER LOGIN ===== */
+
+const userRes = await fetch("http://localhost:3000/login",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({email,password})
+});
+
+const userData = await userRes.json();
+
+if(userData.success){
+localStorage.setItem("userName", userData.user.name);
+localStorage.setItem("userEmail", userData.user.email);
+alert("User Login Successful");
+window.location.href="home.html";
+}else{
+alert("Invalid Email or Password ❌");
+}
+
+return false;
+}
+
+</script>
+</body>
+</html>
