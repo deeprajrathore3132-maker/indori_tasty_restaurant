@@ -297,7 +297,7 @@ document.getElementById("userName").innerText =
 (userName && userName !== "undefined" && userName !== "null") ? userName : "User";
 
 /* LOAD ALL MENU */
-fetch("http://localhost:3000/admin/menu")
+fetch("/admin/menu")
 .then(res=>res.json())
 .then(data=>{
 let box=document.getElementById("menuContainer");
@@ -358,7 +358,7 @@ city: document.getElementById("city").value,
 payment: document.getElementById("mode").value
 };
 
-fetch("http://localhost:3000/order",{
+fetch("/order",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body: JSON.stringify(orderData)

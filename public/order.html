@@ -193,7 +193,7 @@ window.location.href = "login.html";
 
 let email = localStorage.getItem("userEmail");
 
-fetch("http://localhost:3000/admin/orders")
+fetch("/admin/orders")
 .then(res => res.json())
 .then(data => {
 

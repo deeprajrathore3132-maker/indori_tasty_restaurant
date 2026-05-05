@@ -179,7 +179,7 @@ if(!localStorage.getItem("adminLoggedIn")){
 }
 
 /* LOAD STATS */
-fetch("http://localhost:3000/admin/stats")
+fetch("/admin/stats")
 .then(res => res.json())
 .then(data => {
 

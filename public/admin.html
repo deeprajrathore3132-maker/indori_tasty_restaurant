@@ -190,7 +190,7 @@ if(!localStorage.getItem("adminLoggedIn")){
 loadUsers();
 
 function loadUsers(){
-fetch("http://localhost:3000/admin/users")
+fetch("/admin/users")
 .then(res => res.json())
 .then(data => {
 

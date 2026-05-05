@@ -2,7 +2,7 @@ function orderFood(food,price){
 
 let email = localStorage.getItem("userEmail");
 
-fetch("http://localhost:3000/order",{
+fetch("/order",{
 
 method:"POST",
 headers:{

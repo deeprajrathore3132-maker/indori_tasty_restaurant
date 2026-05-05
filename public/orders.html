@@ -191,7 +191,7 @@ if(!localStorage.getItem("adminLoggedIn")){
 
 /* LOAD ORDERS */
 
-fetch("http://localhost:3000/admin/orders")
+fetch("/admin/orders")
 .then(res=>res.json())
 .then(data=>{
 
@@ -228,7 +228,7 @@ function deleteOrder(id){
 
 if(confirm("Delete this order?")){
 
-fetch("http://localhost:3000/admin/deleteOrder/"+id,{
+fetch("/admin/deleteOrder/"+id,{
 method:"DELETE"
 })
 .then(res=>res.json())

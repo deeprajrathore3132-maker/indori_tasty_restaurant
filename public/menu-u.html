@@ -182,7 +182,7 @@ loadMenu();
 
 /* LOAD MENU */
 function loadMenu(){
-fetch("http://localhost:3000/admin/menu")
+fetch("/admin/menu")
 .then(res => res.json())
 .then(data => {
 
@@ -232,7 +232,7 @@ if(imageFile){
 formData.append("image", imageFile);
 }
 
-fetch("http://localhost:3000/admin/menu", {
+fetch("/admin/menu", {
 method:"POST",
 body: formData
 })
@@ -252,7 +252,7 @@ loadMenu();
 /* DELETE */
 function deleteMenu(id){
 if(confirm("Delete this item?")){
-fetch(`http://localhost:3000/admin/menu/${id}`,{
+fetch(`/admin/menu/${id}`,{
 method:"DELETE"
 })
 .then(()=>loadMenu());

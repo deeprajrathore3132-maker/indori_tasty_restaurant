@@ -254,7 +254,7 @@ let userName = localStorage.getItem("userName");
 document.getElementById("userName").innerText = userName || "User";
 
 /* LOAD 3 MENU */
-fetch("http://localhost:3000/admin/menu")
+fetch("/admin/menu")
 .then(res=>res.json())
 .then(data=>{
 let container=document.getElementById("menuContainer");
@@ -316,7 +316,7 @@ city: document.querySelector("input[placeholder='City']").value,
 payment: document.getElementById("paymentMethod").value
 };
 
-fetch("http://localhost:3000/order",{
+fetch("/order",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body: JSON.stringify(orderData)
