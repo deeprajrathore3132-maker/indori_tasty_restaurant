@@ -200,41 +200,27 @@ alert("Passwords do not match");
 return false;
 }
 
+try{
 const response = await fetch("/register",{
-
 method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-name,
-email,
-phone,
-password
-})
-
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({name,email,phone,password})
 });
-const data = await response.json();
 
+const data = await response.json();
 console.log("DATA:", data);
 
 if(data.success){
-
 localStorage.setItem("userName", name);
 localStorage.setItem("userEmail", email);
-
 alert("Registration Successful 🎉");
-
-setTimeout(()=>{
-window.location.href="login.html";
-},1000);
-
+setTimeout(()=>{ window.location.href="login.html"; },1000);
 }else{
-
-alert("Registration Failed ❌");
-
+alert("Registration Failed ❌\n" + (data.message || "Unknown error"));
+}
+}catch(e){
+console.error(e);
+alert("Network error: " + e.message);
 }
 
 return false;

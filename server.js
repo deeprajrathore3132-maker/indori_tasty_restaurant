@@ -20,15 +20,17 @@ app.get("/", (req, res) => {
 
 /* ================= DB ================= */
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
   host: "localhost",
   user: "restaurant",
   password: "yourpassword",
-  database: "foodwebsite"
+  database: "foodwebsite",
+  waitForConnections: true,
+  connectionLimit: 10
 });
 
-db.connect(err => {
-  if (err) console.log("DB Error ❌:", err);
+db.query("SELECT 1", err => {
+  if (err) console.log("DB Error ❌:", err.code, err.sqlMessage);
   else console.log("MySQL Connected ✅");
 });
 
@@ -53,18 +55,28 @@ const upload = multer({ storage });
 app.post("/register", (req, res) => {
   const { name, email, phone, password } = req.body;
 
-  db.query("SELECT * FROM users WHERE email=?", [email], (err, result) => {
-    if (err) return res.status(500).json({ success: false });
+  if (!name || !email || !phone || !password) {
+    return res.status(400).json({ success: false, message: "All fields are required" });
+  }
+
+  db.query("SELECT id FROM users WHERE email=?", [email], (err, result) => {
+    if (err) {
+      console.error("REGISTER select error:", err);
+      return res.status(500).json({ success: false, message: "DB error: " + err.code });
+    }
 
     if (result.length > 0) {
-      return res.json({ success: false, message: "User exists" });
+      return res.json({ success: false, message: "Email already registered" });
     }
 
     db.query(
       "INSERT INTO users (name,email,phone,password) VALUES (?,?,?,?)",
       [name, email, phone, password],
       err => {
-        if (err) return res.status(500).json({ success: false });
+        if (err) {
+          console.error("REGISTER insert error:", err);
+          return res.status(500).json({ success: false, message: "DB error: " + err.code });
+        }
         res.json({ success: true });
       }
     );
@@ -76,16 +88,23 @@ app.post("/register", (req, res) => {
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
 
+  if (!email || !password) {
+    return res.status(400).json({ success: false, message: "Email and password required" });
+  }
+
   db.query(
     "SELECT * FROM users WHERE email=? AND password=?",
     [email, password],
     (err, result) => {
-      if (err) return res.status(500).json({ success: false });
+      if (err) {
+        console.error("LOGIN error:", err);
+        return res.status(500).json({ success: false, message: "DB error: " + err.code });
+      }
 
       if (result.length > 0) {
         res.json({ success: true, user: result[0] });
       } else {
-        res.json({ success: false });
+        res.json({ success: false, message: "Invalid email or password" });
       }
     }
   );
@@ -100,12 +119,15 @@ app.post("/admin/login", (req, res) => {
     "SELECT * FROM admins WHERE email=? AND password=?",
     [email, password],
     (err, result) => {
-      if (err) return res.status(500).json({ success: false });
+      if (err) {
+        console.error("ADMIN LOGIN error:", err);
+        return res.status(500).json({ success: false, message: "DB error: " + err.code });
+      }
 
       if (result.length > 0) {
         res.json({ success: true });
       } else {
-        res.json({ success: false });
+        res.json({ success: false, message: "Invalid admin credentials" });
       }
     }
   );

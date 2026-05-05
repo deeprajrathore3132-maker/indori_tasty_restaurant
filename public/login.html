@@ -132,35 +132,33 @@ async function loginUser(){
 let email = document.getElementById("email").value.trim();
 let password = document.getElementById("password").value.trim();
 
+try{
+
 /* ===== ADMIN LOGIN ===== */
-
 if(email === "admin@gmail.com"){
-
 const adminRes = await fetch("/admin/login",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify({email,password})
 });
-
 const adminData = await adminRes.json();
 
 if(adminData.success){
 localStorage.setItem("adminLoggedIn","true");
 alert("Admin Login Successful");
 window.location.href="admin.html";
+}else{
+alert("Admin Login Failed ❌\n" + (adminData.message || "Wrong password"));
+}
 return false;
 }
 
-}
-
 /* ===== USER LOGIN ===== */
-
 const userRes = await fetch("/login",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify({email,password})
 });
-
 const userData = await userRes.json();
 
 if(userData.success){
@@ -169,7 +167,12 @@ localStorage.setItem("userEmail", userData.user.email);
 alert("User Login Successful");
 window.location.href="home.html";
 }else{
-alert("Invalid Email or Password ❌");
+alert("Login Failed ❌\n" + (userData.message || "Invalid email or password"));
+}
+
+}catch(e){
+console.error(e);
+alert("Network error: " + e.message);
 }
 
 return false;
