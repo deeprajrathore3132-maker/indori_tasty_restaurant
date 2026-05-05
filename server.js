@@ -10,7 +10,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
+app.use("/uploads", express.static("uploads"));
 
+/* ================= HOME ================= */
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "home.html"));
@@ -45,8 +47,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
-app.use("/uploads", express.static("uploads"));
 
 /* ================= REGISTER ================= */
 
@@ -123,9 +123,7 @@ app.get("/admin/menu", (req, res) => {
 app.post("/admin/menu", upload.single("image"), (req, res) => {
   const { food, price, desc, stock } = req.body;
 
-  let imagePath = req.file
-    ? "http://localhost:3000/uploads/" + req.file.filename
-    : "";
+  let imagePath = req.file ? "/uploads/" + req.file.filename : "";
 
   db.query(
     "INSERT INTO menu_ad (food, price, image, description, stock) VALUES (?,?,?,?,?)",
@@ -184,6 +182,18 @@ app.post("/place-order", (req, res) => {
   );
 });
 
+app.post("/order", (req, res) => {
+  let { email, food, quantity, total, city, payment } = req.body;
+
+  let sql =
+    "INSERT INTO orders (email, food, quantity, total, city, payment) VALUES (?,?,?,?,?,?)";
+
+  db.query(sql, [email, food, quantity, total, city, payment], err => {
+    if (err) return res.json({ msg: "error" });
+    res.json({ msg: "success" });
+  });
+});
+
 /* ================= FEEDBACK ================= */
 
 app.post("/feedback", (req, res) => {
@@ -206,10 +216,9 @@ app.get("/feedback", (req, res) => {
   });
 });
 
-/* ================= ✅ FINAL ADMIN STATS ================= */
+/* ================= ADMIN STATS ================= */
 
 app.get("/admin/stats", (req, res) => {
-
   db.query("SELECT COUNT(*) AS users FROM users", (err, u) => {
     if (err) return res.json({});
 
@@ -228,29 +237,14 @@ app.get("/admin/stats", (req, res) => {
             feedback: f[0].feedback || 0,
             revenue: r[0].revenue || 0
           });
-
         });
       });
     });
   });
-
 });
 
 /* ================= SERVER ================= */
 
 app.listen(3000, "0.0.0.0", () => {
   console.log("Server running on port 3000 🚀");
-});
-
-app.post("/order",(req,res)=>{
-
-let {email, food, quantity, total, city, payment} = req.body;
-
-let sql = "INSERT INTO orders (email, food, quantity, total, city, payment) VALUES (?,?,?,?,?,?)";
-
-db.query(sql,[email, food, quantity, total, city, payment],(err)=>{
-if(err) return res.json({msg:"error"});
-res.json({msg:"success"});
-});
-
 });
