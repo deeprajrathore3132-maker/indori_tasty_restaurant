@@ -257,6 +257,10 @@ return src.replace(/^https?:\/\/[^/]+/i,"");
 }
 
 let userName = localStorage.getItem("userName");
+let userEmail = localStorage.getItem("userEmail");
+if(!userName || !userEmail){
+window.location.href = "registration.html";
+}
 document.getElementById("userName").innerText = userName || "User";
 
 /* LOAD 3 MENU */

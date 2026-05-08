@@ -15,7 +15,7 @@ app.use("/uploads", express.static("uploads"));
 /* ================= HOME ================= */
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "home.html"));
+  res.sendFile(path.join(__dirname, "public", "registration.html"));
 });
 
 /* ================= DB ================= */

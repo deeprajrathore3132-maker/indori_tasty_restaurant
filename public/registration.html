@@ -214,7 +214,7 @@ if(data.success){
 localStorage.setItem("userName", name);
 localStorage.setItem("userEmail", email);
 alert("Registration Successful 🎉");
-setTimeout(()=>{ window.location.href="login.html"; },1000);
+setTimeout(()=>{ window.location.href="home.html"; },1000);
 }else{
 alert("Registration Failed ❌\n" + (data.message || "Unknown error"));
 }
