@@ -291,6 +291,11 @@ let currentFood="";
 let currentPrice=0;
 let currentTotal=0;
 
+function fixImg(src){
+if(!src) return "https://via.placeholder.com/260x160?text=No+Image";
+return src.replace(/^https?:\/\/[^/]+/i,"");
+}
+
 let userName = localStorage.getItem("userName");
 
 document.getElementById("userName").innerText =
@@ -304,9 +309,10 @@ let box=document.getElementById("menuContainer");
 box.innerHTML="";
 
 data.forEach(item=>{
+let img = fixImg(item.image);
 box.innerHTML+=`
 <div class="menu-item">
-<img src="${item.image}">
+<img src="${img}" alt="${item.food}" onerror="this.onerror=null;this.src='https://via.placeholder.com/260x160?text=No+Image';">
 <div class="menu-content">
 <h3>${item.food}</h3>
 <p class="price">₹${item.price}</p>

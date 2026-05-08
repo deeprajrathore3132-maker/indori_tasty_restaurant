@@ -191,12 +191,13 @@ table.innerHTML = "";
 
 data.forEach(item => {
 
-let img = item.image || "https://via.placeholder.com/60";
+let img = (item.image || "").replace(/^https?:\/\/[^/]+/i, "")
+|| "https://via.placeholder.com/60";
 
 table.innerHTML += `
 <tr>
 <td>${item.id}</td>
-<td><img src="${img}" width="60"></td>
+<td><img src="${img}" width="60" onerror="this.onerror=null;this.src='https://via.placeholder.com/60';"></td>
 <td>${item.food}</td>
 <td>₹${item.price}</td>
 <td>

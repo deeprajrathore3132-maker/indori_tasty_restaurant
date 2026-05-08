@@ -63,7 +63,7 @@ cursor:pointer;
 /* HERO */
 .hero{
 height:90vh;
-background:url("https://images.unsplash.com/photo-1555396273-367ea4eb4db5") center/cover;
+background:url("https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1600&q=80&auto=format&fit=crop") center/cover, #222;
 display:flex;
 flex-direction:column;
 justify-content:center;
@@ -225,7 +225,7 @@ padding:15px;
 <!-- UPI -->
 <div class="section" id="qrBox">
 <p>Scan & Pay</p>
-<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay">
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay" alt="UPI QR">
 </div>
 
 <!-- CARD -->
@@ -250,6 +250,12 @@ let currentFood="";
 let currentPrice=0;
 let totalAmount=0;
 
+/* Normalize image paths so they work behind any host (localhost, EC2, etc.) */
+function fixImg(src){
+if(!src) return "https://via.placeholder.com/260x180?text=No+Image";
+return src.replace(/^https?:\/\/[^/]+/i,"");
+}
+
 let userName = localStorage.getItem("userName");
 document.getElementById("userName").innerText = userName || "User";
 
@@ -261,9 +267,10 @@ let container=document.getElementById("menuContainer");
 container.innerHTML="";
 
 data.slice(0,3).forEach(item=>{
+let img = fixImg(item.image);
 container.innerHTML+=`
 <div class="menu-item">
-<img src="${item.image}">
+<img src="${img}" alt="${item.food}" onerror="this.onerror=null;this.src='https://via.placeholder.com/260x180?text=No+Image';">
 <div class="menu-content">
 <h3>${item.food}</h3>
 <p class="price">₹${item.price}</p>
@@ -338,6 +345,25 @@ localStorage.clear();
 location.href="login.html";
 }
 
+</script>
+<!-- IBM WATSON CHATBOT -->
+
+
+<script>
+window.watsonAssistantChatOptions = {
+integrationID: "9b94cfa1-b741-4e99-b6e5-f099619a7a75",
+region: "au-syd",
+serviceInstanceID: "76a5245b-c781-4822-acf8-d242c83bc8fa",
+onLoad: async (instance) => { await instance.render(); }
+};
+
+setTimeout(function(){
+const t = document.createElement('script');
+t.src="https://web-chat.global.assistant.watson.appdomain.cloud/versions/"
++(window.watsonAssistantChatOptions.clientVersion||'latest')
++"/WatsonAssistantChatEntry.js";
+document.head.appendChild(t);
+});
 </script>
 
 </body>
