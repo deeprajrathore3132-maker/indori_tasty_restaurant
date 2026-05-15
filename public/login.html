@@ -105,7 +105,7 @@ padding:12px;
 
 <h2>🍔 Login</h2>
 
-<form onsubmit="return loginUser()">
+<form onsubmit="event.preventDefault(); loginUser();">
 
 <input type="email" id="email" placeholder="Enter Email" required>
 <input type="password" id="password" placeholder="Enter Password" required>
